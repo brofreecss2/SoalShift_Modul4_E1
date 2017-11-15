@@ -92,6 +92,17 @@ int endsWith(const char *str, const char *suffix){
 	return strncmp(str + lenstr - lensuffix,suffix,lensuffix);
 }
 
+static int xmp_mkdir(const char *path, mode_t mode)
+{
+	int res;
+
+	res = mkdir(path, mode);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	char fpath[1000];
@@ -147,24 +158,39 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	fclose(dest);
 
 
+	if(del){
+		fprintf(stderr,"bisa\n");
+		sprintf(temp,"rm %s",source_file);
+		system(temp);
+
+
+		char command[1000];
+// 		system("mkdir -p rahasia");
+
+// 		sprintf(command,"cp %s rahasia",dest_file);
+// 		system(command);
+
+		sprintf(command,"chmod 000 '%s'",dest_file);
+		system(command);
+
+		return -1;
+	}
 	int res = open(fpath, fi->flags);
 	if (res == -1)
 		return -errno;
 
 	close(res);
-	if(del){
-		sprintf(temp,"rm %s",source_file);
-		system(temp);
-		return -1;
-	}
 	return 0;
 }
+
+
 
 static struct fuse_operations xmp_oper = {
 	.getattr	= xmp_getattr,
 	.readdir	= xmp_readdir,
 	.read		= xmp_read,
-	.open		= xmp_open
+	.mkdir		= xmp_mkdir,
+	.open		= xmp_open,
 };
 
 int main(int argc, char *argv[]){
