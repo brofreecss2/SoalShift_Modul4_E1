@@ -9,7 +9,7 @@
 #include <sys/time.h>
 
 //commit1 dari cobafuse.c di modul4
-static const char *dirpath = "/home/farhan/Documents";
+static const char *dirpath = "/home/farhan/Downloads";
 
 int file_is_modified(const char *path, time_t oldTime){
 	struct stat file_stat;
@@ -96,22 +96,32 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	return res;
 }
 
+
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	char fpath[1000];
 
 	if(strcmp(path,"/") == 0)
 	{
-		path=dirpath;
+		char *path=dirpath;
 		sprintf(fpath,"%s",path);
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
 
 	char source_file[1000],dest_file[1000],temp[1025];
 	FILE *source,*dest;
-
+	
 	sprintf(source_file,"%s",fpath);
-	source = fopen(source_file,"r");	
+	source = fopen(source_file,"r");
+	sprintf(x,"%s1",fpath);
+	system(cp fpath x);	
+	struct stat file_stat;
+	time_t start=file_stat.st_mtime;
+	while(file_is_modified(fpath, start)){
+	system(mv fpath dirpath/simpanan);
+	system(cp x fpath);
+	system(rm x);} 
+		
 
 
 	int res = open(fpath, fi->flags);
