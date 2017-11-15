@@ -91,6 +91,7 @@ int endsWith(const char *str, const char *suffix){
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
 	char fpath[1000];
+
 	if(strcmp(path,"/") == 0)
 	{
 		path=dirpath;
@@ -98,17 +99,49 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
 
-	char source_file[1000],dest_file[1000];
+	char source_file[1000],dest_file[1000],temp[1025];
 	FILE *source,*dest;
 
 	sprintf(source_file,"%s",fpath);
 	source = fopen(source_file,"r");
 
+	int del=0;
+
 	if(endsWith(fpath,".pdf")==0){
-		
+		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.\n");
+		del=1;
+		sprintf(dest_file,"%s.ditandai",fpath);
+	}
+	else if(endsWith(fpath,".txt")==0){
+		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.\n");
+		del=1;
+		sprintf(dest_file,"%s.ditandai",fpath);
+	}
+	else if(endsWith(fpath,".doc")==0){
+		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.\n");
+		del=1;
+		sprintf(dest_file,"%s.ditandai",fpath);
+	}
+	else{
+		sprintf(dest_file,"%s",fpath);
 	}
 
+	int exist = access(dest_file,F_OK);
+	if(!exist) remove(dest_file);
 
+	dest = fopen(dest_file,"w");
+	while(fgets(temp,sizeof(temp),source)!=NULL){
+		fprintf(dest,"%s",temp);
+	}
+
+	fclose(source);
+	fclose(dest);
+
+	if(del){
+		sprintf(temp,"rm %s",source_file);
+		system(temp);
+		return 0;
+	}
 
 	int res = open(fpath, fi->flags);
 	if (res == -1)
