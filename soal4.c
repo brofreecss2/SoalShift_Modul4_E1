@@ -22,6 +22,8 @@ static const char *dirpath = "/home/hehe/Downloads";
 // }
 
 
+char readPath[1024];
+
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
   	int res;
@@ -82,6 +84,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 		sprintf(fpath,"%s",path);
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
+	strcpy(readPath,path);
 	int res = 0;
   	int fd = 0 ;
 
@@ -130,9 +133,9 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 		     off_t offset, struct fuse_file_info *fi)
 {
 	int fd;
-	int res;
+	int res,res1;
 
-	char fpath[1000];
+	char fpath[1000],temp[1024];
 	if(strcmp(path,"/") == 0)
 	{
 		path=dirpath;
@@ -148,6 +151,10 @@ static int xmp_write(const char *path, const char *buf, size_t size,
 	res = pwrite(fd, buf, size, offset);
 	if (res == -1)
 		res = -errno;
+
+	sprintf(temp,"%s%s",dirpath,readPath);
+	res1 = chmod(temp,0000);
+	if(res1 ==  1)res1=-errno;
 
 	close(fd);
 	return res;
@@ -168,22 +175,11 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	system("mkdir -p /home/hehe/Downloads/simpanan");
 	sprintf(path2,"%s%s","/home/hehe/Downloads/simpanan",path);
 
-	int i,counter=0;
-	for(i=0;i<strlen(path);++i){
-		if(path[i]=='/')counter++;
-	}
 
-	if(counter==2){
-//		sprintf(command,"%s%s","chmod 444")
-
-		int res = open(fpath, fi->flags);
-		if (res == -1)
-			return -errno;
-		close(res);
-	}
-
-
-	// close(res);
+	int res = open(fpath, fi->flags);
+	if (res == -1)
+		return -errno;
+	close(res);
 	return 0;
 }
 
