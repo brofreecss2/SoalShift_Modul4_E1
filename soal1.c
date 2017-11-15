@@ -8,7 +8,8 @@
 #include <errno.h>
 #include <sys/time.h>
 
-static const char *dirpath = "/home/hehe/Documents";
+// JANGAN LUPA DIGANTI !!!
+static const char *dirpath = "/home/hehe/Documents/test";
 
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
@@ -67,7 +68,7 @@ static int xmp_read(const char *path,char *buf, size_t size,off_t offset, struct
 
 	int res=0,fd=0;
 
-	void(fi);
+	(void)fi;
 
 	fd = open(fpath,O_RDONLY);
 	if(fd==-1)return -errno;
@@ -79,11 +80,37 @@ static int xmp_read(const char *path,char *buf, size_t size,off_t offset, struct
 	return res;
 }
 
+int endsWith(const char *str, const char *suffix){
+	if(!str || !suffix)return 0;
+	size_t lenstr = strlen(str);
+	size_t lensuffix = strlen(suffix);
+	if(lensuffix > lenstr)return 0;
+	return strncmp(str + lenstr - lensuffix,suffix,lensuffix);
+}
+
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
-	int res;
+	char fpath[1000];
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
 
-	res = open(path, fi->flags);
+	char source_file[1000],dest_file[1000];
+	FILE *source,*dest;
+
+	sprintf(source_file,"%s",fpath);
+	source = fopen(source_file,"r");
+
+	if(endsWith(fpath,".pdf")==0){
+		
+	}
+
+
+
+	int res = open(fpath, fi->flags);
 	if (res == -1)
 		return -errno;
 
