@@ -108,20 +108,29 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	}
 	else sprintf(fpath, "%s%s",dirpath,path);
 
-	char source_file[1000],dest_file[1000],temp[1025];
-	FILE *source,*dest;
+	char source_file[1000],dest_file[1000], x_file[1000],temp1[1025],temp2[1025];
+	FILE *source,*dest,*x;
 	
 	sprintf(source_file,"%s",fpath);
 	source = fopen(source_file,"r");
-	sprintf(x,"%s1",fpath);
-	system(cp fpath x);	
+	int del=0;
+	sprintf(x_file,"%s.cpy",fpath);
+	x=fopen(x_file,"w");
+	while(fgets,(temp1,sizeof(temp1),source!=null){
+	fprintf(x,"%s1",temp1);}
+
 	struct stat file_stat;
 	time_t start=file_stat.st_mtime;
 	while(file_is_modified(fpath, start)){
-	system(mv fpath dirpath/simpanan);
-	system(cp x fpath);
-	system(rm x);} 
-		
+	del=1;
+	sprintf(dest_file,"%s\simpanan", fpath);
+	dest = fopen(dest_file,"w");
+	while(fgets(temp2,sizeof(temp2),x)!null){
+	fprintf(dest,"%s",temp2);}
+	}
+	fclose(source);
+	fclose(x);
+	fclose(dest);
 
 
 	int res = open(fpath, fi->flags);
@@ -130,7 +139,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 
 	close(res);
 	if(del){
-		sprintf(temp,"rm %s",source_file);
+		sprintf(temp1,"rm %s",x_file);
 		system(temp);
 		return -1;
 	}
@@ -142,7 +151,7 @@ static struct fuse_operations xmp_oper = {
 	.getattr	= xmp_getattr,
 	.readdir	= xmp_readdir,
 	.read		= xmp_read,
-	.mkdir		= xmp_mkdir,
+	.open		= xmp_open
 };
 
 int main(int argc, char *argv[])
