@@ -11,6 +11,17 @@
 //commit1 dari cobafuse.c di modul4
 static const char *dirpath = "/home/farhan/Documents";
 
+int file_is_modified(const char *path, time_t oldTime){
+	struct stat file_stat;
+	int err=stat(path,&file_stat);
+	if(err!=0){
+		perror("[file_is_modified] stat");
+		exit(errno);
+	}
+	return file_stat.st_mtime>oldTime;
+}
+
+
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
   int res;
