@@ -22,3 +22,9 @@ static int xmp_getattr(const char *path, struct stat *stbuf)
 
 	return 0;
 }
+
+static struct fuse_operations xmp_oper = {
+	.getattr	= xmp_getattr,
+	.readdir	= xmp_readdir,
+	.read		= xmp_read,
+};
