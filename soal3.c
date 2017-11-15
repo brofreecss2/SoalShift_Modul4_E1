@@ -295,7 +295,8 @@ static struct fuse_operations xmp_oper = {
 	.write		= xmp_write,
 	.truncate	= xmp_truncate,
 	.chmod		= xmp_chmod,
-	.rename 	= xmp_rename
+	.rename 	= xmp_rename,
+	.mknod		= xmp_mknod,
 };
 
 int main(int argc, char *argv[])
