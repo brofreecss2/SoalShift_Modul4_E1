@@ -115,16 +115,19 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	char output[1000] = "zenity --error --text='Terjadi kesalahan! File berisi konten berbahaya.'";
 	if(endsWith(fpath,".pdf")==0){
 		system(output);
+//		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.");
 		del=1;
 		sprintf(dest_file,"%s.ditandai",fpath);
 	}
 	else if(endsWith(fpath,".txt")==0){
 		system(output);
+//		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.");
 		del=1;
 		sprintf(dest_file,"%s.ditandai",fpath);
 	}
 	else if(endsWith(fpath,".doc")==0){
 		system(output);
+//		fprintf(stderr,"Terjadi kesalahan! File berisi konten berbahaya.");
 		del=1;
 		sprintf(dest_file,"%s.ditandai",fpath);
 	}
@@ -152,7 +155,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 	if(del){
 		sprintf(temp,"rm %s",source_file);
 		system(temp);
-		return 1;
+		return -1;
 	}
 	return 0;
 }
