@@ -85,6 +85,38 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 	return res;
 }
 
+static int xmp_open(const char *path, struct fuse_file_info *fi)
+{
+	char fpath[1000];
+
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
+
+	char source_file[1000],dest_file[1000],temp[1025];
+	FILE *source,*dest;
+
+	sprintf(source_file,"%s",fpath);
+	source = fopen(source_file,"r");	
+
+
+	int res = open(fpath, fi->flags);
+	if (res == -1)
+		return -errno;
+
+	close(res);
+	if(del){
+		sprintf(temp,"rm %s",source_file);
+		system(temp);
+		return -1;
+	}
+	return 0;
+}
+
+
 static struct fuse_operations xmp_oper = {
 	.getattr	= xmp_getattr,
 	.readdir	= xmp_readdir,
