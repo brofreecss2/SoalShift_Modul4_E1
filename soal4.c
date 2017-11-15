@@ -276,6 +276,7 @@ static int xmp_rename(const char *from, const char *to)
 	res = rename(file_from, file_to);
 	if (res == -1)
 		return -errno;
+	
 
 	return 0;
 }
